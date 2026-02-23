@@ -1,0 +1,26 @@
+[
+  {
+    "Title": "Learn Go basics (structs, slices, functions)",
+    "Done": true
+  },
+  {
+    "Title": "Build CLI ToDo application",
+    "Done": true
+  },
+  {
+    "Title": "Implement JSON persistence",
+    "Done": true
+  },
+  {
+    "Title": "Refactor code into modular functions",
+    "Done": false
+  },
+  {
+    "Title": "Add search functionality",
+    "Done": false
+  },
+  {
+    "Title": "Write unit tests for task operations",
+    "Done": false
+  }
+]

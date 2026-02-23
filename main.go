@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"strconv"
@@ -27,6 +28,19 @@ type Task struct {
 // 	optionReader = strings.TrimSpace(optionReader)
 // 	return optionReader
 // }
+
+func loadWork(fileName string) ([]Task, error) {
+	file, err := os.Open(fileName)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	var tasks []Task
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&tasks)
+	return tasks, err
+}
 
 func showMenu(reader *bufio.Reader) string {
 	for {
@@ -149,7 +163,21 @@ func markTaskDone(tasks []Task, reader *bufio.Reader) {
 	fmt.Println("Task marked done!")
 }
 
+func saveWork(fileName string, tasks []Task) error {
+	fmt.Print("Saving the Tasks List...\n")
+	file, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	return encoder.Encode(tasks)
+
+}
+
 func deleteTask(tasks []Task, reader *bufio.Reader) []Task {
+	fmt.Print("\n\n")
 	fmt.Print("4 - Delete Task:\n")
 	fmt.Print("Enter the task number: ")
 
@@ -182,6 +210,14 @@ func main() {
 		{Title: "Build App", Done: true},
 	}
 
+	const fileName = "tasks.json"
+
+	tasks, err := loadWork(fileName)
+	if err != nil {
+		fmt.Println("No existing tasks found. Starting fresh.")
+		tasks = []Task{}
+	}
+
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
@@ -193,12 +229,15 @@ func main() {
 
 		case "2":
 			tasks = addTask(tasks, reader)
+			saveWork(fileName, tasks)
 
 		case "3":
 			markTaskDone(tasks, reader)
+			saveWork(fileName, tasks)
 
 		case "4":
 			tasks = deleteTask(tasks, reader)
+			saveWork(fileName, tasks)
 
 		case "5":
 			fmt.Println("Goodbye 👋")
